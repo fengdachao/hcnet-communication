@@ -9,10 +9,10 @@ from PlayCtrl import *
 from time import sleep
 
 # 登录的设备信息
-DEV_IP = create_string_buffer(b'10.17.35.41')
+DEV_IP = create_string_buffer(b'192.168.3.5')
 DEV_PORT = 8000
 DEV_USER_NAME = create_string_buffer(b'admin')
-DEV_PASSWORD = create_string_buffer(b'abcd1234')
+DEV_PASSWORD = create_string_buffer(b'vfes0001')
 
 WINDOWS_FLAG = True
 win = None  # 预览窗口
@@ -60,7 +60,7 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
     if pFrameInfo.contents.nType == 3:
         # 解码返回视频YUV数据，将YUV数据转成jpg图片保存到本地
         # 如果有耗时处理，需要将解码数据拷贝到回调函数外面的其他线程里面处理，避免阻塞回调导致解码丢帧
-        sFileName = ('../../pic/test_stamp[%d].jpg'% pFrameInfo.contents.nStamp)
+        sFileName = ('./pic/test_stamp[%d].jpg'% pFrameInfo.contents.nStamp)
         nWidth = pFrameInfo.contents.nWidth
         nHeight = pFrameInfo.contents.nHeight
         nType = pFrameInfo.contents.nType
@@ -76,6 +76,8 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
 
 def RealDataCallBack_V30(lPlayHandle, dwDataType, pBuffer, dwBufSize, pUser):
     # 码流回调函数
+    # print('data type %s', dwDataType)
+    # print('buffer size:%d  %d', dwBufSize, dwDataType)
     if dwDataType == NET_DVR_SYSHEAD:
         # 设置流播放模式
         Playctrldll.PlayM4_SetStreamOpenMode(PlayCtrl_Port, 0)
@@ -93,9 +95,10 @@ def RealDataCallBack_V30(lPlayHandle, dwDataType, pBuffer, dwBufSize, pUser):
         else:
             print(u'播放库打开流失败')
     elif dwDataType == NET_DVR_STREAMDATA:
-        Playctrldll.PlayM4_InputData(PlayCtrl_Port, pBuffer, dwBufSize)
-    else:
-        print (u'其他数据,长度:', dwBufSize)
+        #Playctrldll.PlayM4_InputData(PlayCtrl_Port, pBuffer, dwBufSize)
+        print('buffer size: %d'%dwBufSize)
+    # else:
+    #     print (u'其他数据,长度:', dwBufSize)
 
 def OpenPreview(Objdll, lUserId, callbackFun):
     '''
@@ -196,25 +199,25 @@ if __name__ == '__main__':
     win.mainloop()
 
     # 开始云台控制
-    lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 0)
-    if lRet == 0:
-        print ('Start ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-    else:
-        print ('Start ptz control success')
+    # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 0)
+    # if lRet == 0:
+    #     print ('Start ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+    # else:
+    #     print ('Start ptz control success')
 
-    # 转动一秒
-    sleep(1)
+    # # 转动一秒
+    # sleep(1)
 
     # 停止云台控制
-    lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 1)
-    if lRet == 0:
-        print('Stop ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-    else:
-        print('Stop ptz control success')
+    # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 1)
+    # if lRet == 0:
+    #     print('Stop ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+    # else:
+    #     print('Stop ptz control success')
 
     # 关闭预览
     Objdll.NET_DVR_StopRealPlay(lRealPlayHandle)
-
+    print('close preview ...')
     # 停止解码，释放播放库资源
     if PlayCtrl_Port.value > -1:
         Playctrldll.PlayM4_Stop(PlayCtrl_Port)
