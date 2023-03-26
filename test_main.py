@@ -55,6 +55,13 @@ def LoginDev(Objdll):
     lUserId = Objdll.NET_DVR_Login_V30(DEV_IP, DEV_PORT, DEV_USER_NAME, DEV_PASSWORD, byref(device_info))
     return (lUserId, device_info)
 
+def capture(Objdll):
+    #
+    sFileName = './test_capture.jpg'
+    captureSuccess = Objdll.NET_DVR_CaptureJPEGPicture(lRealPlayHandle, 1, c_char_p(sFileName.encode()))
+    print('capture success:', captureSuccess)
+    print('error code %s'%Objdll.NET_DVR_GetLastError())
+
 def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
     # 解码回调函数
     if pFrameInfo.contents.nType == 3:
@@ -70,7 +77,7 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
 
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         if lRet == 0:
-            print('PlayM4_ConvertToJpegFile fail, error code is:', Playctrldll.PlayM4_GetLastError(nPort))
+            print('PlayM4_ConvertToJpegFile fail, error code is:', Playctrldll.PlayM4_GetLastError())
         else:
             print('PlayM4_ConvertToJpegFile success')
 
@@ -95,8 +102,11 @@ def RealDataCallBack_V30(lPlayHandle, dwDataType, pBuffer, dwBufSize, pUser):
         else:
             print(u'播放库打开流失败')
     elif dwDataType == NET_DVR_STREAMDATA:
-        #Playctrldll.PlayM4_InputData(PlayCtrl_Port, pBuffer, dwBufSize)
-        print('buffer size: %d'%dwBufSize)
+        Playctrldll.PlayM4_InputData(PlayCtrl_Port, pBuffer, dwBufSize)
+        #print('buffer size: %d'%dwBufSize)
+        # objdll.NET_DVR_CaptureJPEGPicture
+        pass
+
     # else:
     #     print (u'其他数据,长度:', dwBufSize)
 
@@ -113,6 +123,7 @@ def OpenPreview(Objdll, lUserId, callbackFun):
 
     # 开始预览并且设置回调函数回调获取实时流数据
     lRealPlayHandle = Objdll.NET_DVR_RealPlay_V40(lUserId, byref(preview_info), callbackFun, None)
+
     return lRealPlayHandle
 
 def InputData(fileMp4, Playctrldll):
@@ -183,6 +194,10 @@ if __name__ == '__main__':
         Objdll.NET_DVR_Cleanup()
         exit()
 
+    setModeSign = Objdll.NET_DVR_SetCapturePictureMode(1)
+    print('set mode:', setModeSign)
+
+    
     # 定义码流回调函数
     funcRealDataCallBack_V30 = REALDATACALLBACK(RealDataCallBack_V30)
     # 开启预览
@@ -195,8 +210,9 @@ if __name__ == '__main__':
         Objdll.NET_DVR_Cleanup()
         exit()
 
+    capture(Objdll)
     #show Windows
-    win.mainloop()
+    win.mainloop()    
 
     # 开始云台控制
     # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 0)
