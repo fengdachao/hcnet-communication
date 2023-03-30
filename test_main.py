@@ -57,8 +57,8 @@ def LoginDev(Objdll):
 
 def capture(Objdll):
     #
-    sFileName = './test_capture.jpg'
-    captureSuccess = Objdll.NET_DVR_CaptureJPEGPicture(lRealPlayHandle, 1, c_char_p(sFileName.encode()))
+    sFileName = './pic.jpg'
+    captureSuccess = Objdll.NET_DVR_CaptureJPEGPicture(lRealPlayHandle, 33, c_char_p(sFileName.encode()))
     print('capture success:', captureSuccess)
     print('error code %s'%Objdll.NET_DVR_GetLastError())
 
@@ -67,14 +67,23 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
     if pFrameInfo.contents.nType == 3:
         # 解码返回视频YUV数据，将YUV数据转成jpg图片保存到本地
         # 如果有耗时处理，需要将解码数据拷贝到回调函数外面的其他线程里面处理，避免阻塞回调导致解码丢帧
-        sFileName = ('./pic/test_stamp[%d].jpg'% pFrameInfo.contents.nStamp)
+        sFileName = ('/home/vfes/hcnet-communication/pic/test_stamp[%d].jpg'% pFrameInfo.contents.nStamp)
         nWidth = pFrameInfo.contents.nWidth
         nHeight = pFrameInfo.contents.nHeight
         nType = pFrameInfo.contents.nType
         dwFrameNum = pFrameInfo.contents.dwFrameNum
         nStamp = pFrameInfo.contents.nStamp
-        print(nWidth, nHeight, nType, dwFrameNum, nStamp, sFileName)
-
+        print(dwFrameNum, nStamp, nSize)
+        # picByte = Objdll.BYTE_ARRAY(1024*1024*5)
+        # picByte.write()
+        # bByte = picByte.getPointer()
+        # print('bByte:%s'%bByte)
+        # print('pBuf:%s'%pBuf)
+        # f = open(sFileName, 'wb')
+        # f.write(pBuf)
+        # f.close()
+        if dwFrameNum % 25 != 0:
+            return
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         if lRet == 0:
             print('PlayM4_ConvertToJpegFile fail, error code is:', Playctrldll.PlayM4_GetLastError())
@@ -88,8 +97,14 @@ def RealDataCallBack_V30(lPlayHandle, dwDataType, pBuffer, dwBufSize, pUser):
     if dwDataType == NET_DVR_SYSHEAD:
         # 设置流播放模式
         Playctrldll.PlayM4_SetStreamOpenMode(PlayCtrl_Port, 0)
+        print('port:%s'%PlayCtrl_Port)
         # 打开码流，送入40字节系统头数据
         if Playctrldll.PlayM4_OpenStream(PlayCtrl_Port, pBuffer, dwBufSize, 1024*1024):
+            # 
+            picBuffer = [1024*1024]
+            size = 5
+            #Playctrldll.PlayM4_GetJPEG(PlayCtrl_Port, 1024*1024, picBuffer, 5)
+            #print('pic buffer:%s'%picBuffer)
             # 设置解码回调，可以返回解码后YUV视频数据
             global FuncDecCB
             FuncDecCB = DECCBFUNWIN(DecCBFun)
@@ -148,8 +163,8 @@ if __name__ == '__main__':
     # 得到屏幕高度
 
     # 窗口宽高
-    ww = 512
-    wh = 384
+    ww = 520
+    wh = 380
     x = (sw - ww) / 2
     y = (sh - wh) / 2
     win.geometry("%dx%d+%d+%d" % (ww, wh, x, y))
@@ -211,6 +226,7 @@ if __name__ == '__main__':
         exit()
 
     capture(Objdll)
+
     #show Windows
     win.mainloop()    
 
