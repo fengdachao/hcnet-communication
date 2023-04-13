@@ -67,7 +67,7 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
     if pFrameInfo.contents.nType == 3:
         # 解码返回视频YUV数据，将YUV数据转成jpg图片保存到本地
         # 如果有耗时处理，需要将解码数据拷贝到回调函数外面的其他线程里面处理，避免阻塞回调导致解码丢帧
-        sFileName = ('/home/vfes/hcnet-communication/pic/test_stamp[%d].jpg'% pFrameInfo.contents.nStamp)
+        sFileName = ('/home/vfes/hcnet-communication/pic1/test_stamp[%d].jpg'% pFrameInfo.contents.nStamp)
         nWidth = pFrameInfo.contents.nWidth
         nHeight = pFrameInfo.contents.nHeight
         nType = pFrameInfo.contents.nType
@@ -82,7 +82,7 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         # f = open(sFileName, 'wb')
         # f.write(pBuf)
         # f.close()
-        if dwFrameNum % 25 != 0:
+        if dwFrameNum % 50 != 0:
             return
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         if lRet == 0:
