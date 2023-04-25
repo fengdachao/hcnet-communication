@@ -67,7 +67,11 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         dwFrameNum = pFrameInfo.contents.dwFrameNum
         nStamp = pFrameInfo.contents.nStamp
         print(nWidth, nHeight, nType, dwFrameNum, nStamp, sFileName)
-
+        picArray = Objdll.BYTE_ARRAY(1024*1024*5)
+        picArray.write()
+        pByte = picArray.getPointer()
+        
+        pByte.read()
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         if lRet == 0:
             print('PlayM4_ConvertToJpegFile fail, error code is:', Playctrldll.PlayM4_GetLastError(nPort))
@@ -84,7 +88,8 @@ def RealDataCallBack_V30(lPlayHandle, dwDataType, pBuffer, dwBufSize, pUser):
             # 设置解码回调，可以返回解码后YUV视频数据
             global FuncDecCB
             FuncDecCB = DECCBFUNWIN(DecCBFun)
-            Playctrldll.PlayM4_SetDecCallBackExMend(PlayCtrl_Port, FuncDecCB, None, 0, None)
+            # Playctrldll.PlayM4_SetDecCallBackExMend(PlayCtrl_Port, FuncDecCB, None, 0, None)
+            
             # 开始解码播放
             if Playctrldll.PlayM4_Play(PlayCtrl_Port, cv.winfo_id()):
                 print(u'播放库播放成功')
@@ -184,6 +189,8 @@ if __name__ == '__main__':
     funcRealDataCallBack_V30 = REALDATACALLBACK(RealDataCallBack_V30)
     # 开启预览
     lRealPlayHandle = OpenPreview(Objdll, lUserId, funcRealDataCallBack_V30)
+    # 抓图回调
+    Playctrldll.PlayM4_SetDisplayCallBack(PlayCtrl_Port, DecCBFun)
     if lRealPlayHandle < 0:
         print ('Open preview fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
         # 登出设备
