@@ -13,7 +13,7 @@ def pHash(img):
     img_mean = img_sum / 64
     img_finger = np.where(img > img_mean, 1, 0)
     return img_finger
-def comparehash(path1,path2):
+def comparehash(path1,path2, p = 0):
     #print(imga)
     img1 = cv2.imread(path1)
     img2 = cv2.imread(path2)
@@ -24,23 +24,23 @@ def comparehash(path1,path2):
     han = isquel[index]
     hanming = len(han)
     print(hanming)
-    if hanming>0:
-        print ('hangming' ,hanming)
-        sendPic(path2)    
+    return hanming>p
+        # print ('hangming' ,hanming)
+        # return True
+        # sendPic(path2)    
             # imgs_n.append(imgList [count])
         # cv2.imwrite(img_path1 + "/" + imgList[count], img)
     # imga=img1
     #return img1
-def comparessim(path1,path2):
+
+def comparessim(path1,path2, p = 0.94):
     #print(imga)
     img1 = cv2.imread(path1)
     img2 = cv2.imread(path2)
     ssim = compare_ssim(img1, img2, channel_axis=-1)
     #ssim = compare_ssim(img1, img2)
     print(ssim)
-    if ssim<0.94:
-        #print ('hangming' ,hanming)
-        sendPic(path2)
+    return ssim < p
 
 
 

@@ -5,9 +5,9 @@ HOST = "192.168.3.2"  # The server's hostname or IP address
 # HOST = "localhost"
 PORT = 9001 # The port used by the server
 
-def sendPic(fileName):
+def sendPic(fileName, port = PORT):
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-      s.connect((HOST, PORT))
+      s.connect((HOST, port))
       with open(fileName, 'rb') as imageFile:
         contents = imageFile.read()
         # s.sendall(b"Hello, world")
@@ -19,9 +19,9 @@ def sendPic(fileName):
   print(f"Received {data!r}")
   s.close()
 
-def sendPicData(buf):
+def sendPicData(buf, port = PORT):
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-      s.connect((HOST, PORT))
+      s.connect((HOST, port))
       s.sendall(buf)
       data = s.recv(2048)
 

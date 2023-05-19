@@ -9,6 +9,7 @@ from PlayCtrl import *
 from time import sleep
 
 from client import sendPic, sendPicData
+from readConfig import readConfig
 from fangfa import comparehash
 from fangfa import comparessim
 # 登录的设备信息
@@ -16,6 +17,7 @@ DEV_IP = create_string_buffer(b'192.168.3.4')
 DEV_PORT = 8000
 DEV_USER_NAME = create_string_buffer(b'admin')
 DEV_PASSWORD = create_string_buffer(b'vfes0001')
+PICTURE_SERVER_PORT = 9002
 
 WINDOWS_FLAG = True
 win = None  # 预览窗口
@@ -26,6 +28,8 @@ Playctrldll = None  # 播放库
 FuncDecCB = None   # 播放库解码回调函数，需要定义为全局的
 
 previousPic = None
+CompareParameter = None
+CompareMethod = None
 
 # 获取当前系统环境
 def GetPlatform():
@@ -93,12 +97,20 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         # sendPic(sFileName)
         global previousPic
+        global CompareParameter
+        global CompareMethod
+        print('paramter:', CompareParameter, CompareMethod)    
         if (previousPic == None):
             previousPic = sFileName
         else:
             print(previousPic)
-            #comparehash(previousPic, sFileName)
-            comparessim(previousPic, sFileName)
+            if (CompareMethod == 'ssim'):
+                r = comparessim(previousPic, sFileName, CompareParameter)
+            else:
+                r = comparehash(previousPic, sFileName, CompareParameter)
+            # comparessim(previousPic, sFileName, CompareParameter)
+            if r:
+                sendPic(sFileName, PICTURE_SERVER_PORT)
             previousPic = sFileName
 
         if lRet == 0:
@@ -208,6 +220,10 @@ if __name__ == '__main__':
         Playctrldll = cdll.LoadLibrary(r'./libPlayCtrl.so')
 
     SetSDKInitCfg()  # 设置组件库和SSL库加载路径
+
+    paramConfig = readConfig()
+    CompareParameter = float(paramConfig[1]['params'])
+    CompareMethod = paramConfig[1]['algorithm']
 
     # 初始化DLL
     Objdll.NET_DVR_Init()
