@@ -1,5 +1,5 @@
-[2023-05-19 11:04:07.347][DBG] CStreamConvert::UnloadConvertLib, m_iInitCount = 0
-[2023-05-19 11:04:07.347][INF] COM_Logout[0][0]
-[2023-05-19 11:04:07.357][DBG] CUserMgr::UnRegisterHeartProxy[0]
-[2023-05-19 11:04:07.357][INF] Private connect 192.168.3.5:8000 sock=134 this=0x38348164 cmd=0x10100 port=44622
-[2023-05-19 11:04:07.366][INF] CTransUnitMgr::UnloadTransUnitLib
+[2023-05-19 12:15:58.116][DBG] CStreamConvert::UnloadConvertLib, m_iInitCount = 0
+[2023-05-19 12:15:58.117][INF] COM_Logout[0][0]
+[2023-05-19 12:15:58.118][DBG] CUserMgr::UnRegisterHeartProxy[0]
+[2023-05-19 12:15:58.118][INF] Private connect 192.168.3.5:8000 sock=133 this=0x55c8eb94 cmd=0x10100 port=55342
+[2023-05-19 12:15:58.121][INF] CTransUnitMgr::UnloadTransUnitLib
