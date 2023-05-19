@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 from client import sendPic
+from skimage.metrics import structural_similarity as compare_ssim
 
 #global imga
 
@@ -30,6 +31,16 @@ def comparehash(path1,path2):
         # cv2.imwrite(img_path1 + "/" + imgList[count], img)
     # imga=img1
     #return img1
+def comparessim(path1,path2):
+    #print(imga)
+    img1 = cv2.imread(path1)
+    img2 = cv2.imread(path2)
+    ssim = compare_ssim(img1, img2, channel_axis=-1)
+    #ssim = compare_ssim(img1, img2)
+    print(ssim)
+    if ssim<0.94:
+        #print ('hangming' ,hanming)
+        sendPic(path2)
 
 
 

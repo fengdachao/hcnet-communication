@@ -10,7 +10,7 @@ from time import sleep
 
 from client import sendPic, sendPicData
 from fangfa import comparehash
-
+from fangfa import comparessim
 # 登录的设备信息
 DEV_IP = create_string_buffer(b'192.168.3.5')
 DEV_PORT = 8000
@@ -97,7 +97,8 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
             previousPic = sFileName
         else:
             print(previousPic)
-            comparehash(previousPic, sFileName)
+            #comparehash(previousPic, sFileName)
+            comparessim(previousPic, sFileName)
             previousPic = sFileName
 
         if lRet == 0:
