@@ -3,9 +3,10 @@ import json
 
 host = "192.168.3.2"
 # host = "baidu.com"
-def readConfig():
+
+def read(url):
     conn = http.client.HTTPConnection(host, 3001)
-    conn.request("GET", "/api/config/list")
+    conn.request("GET", url)
     response = conn.getresponse()
     configData = b''
     while chunk := response.read(200):
@@ -16,6 +17,12 @@ def readConfig():
     configJson = json.loads(configData)
     conn.close()
     return configJson
+def readConfig():
+    return read('/api/config/list')
+
+def readParam():
+    return read('/api/config/param')
+    
 
 if __name__ == '__main__':
     config = readConfig()
