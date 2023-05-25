@@ -9,7 +9,7 @@ from PlayCtrl import *
 from time import sleep
 
 from client import sendPic, sendPicData
-from readConfig import readConfig
+from readConfig import readConfig, readParam
 from fangfa import comparehash
 from fangfa import comparessim
 # 登录的设备信息
@@ -17,7 +17,7 @@ DEV_IP = create_string_buffer(b'192.168.3.4')
 DEV_PORT = 8000
 DEV_USER_NAME = create_string_buffer(b'admin')
 DEV_PASSWORD = create_string_buffer(b'vfes0001')
-PICTURE_SERVER_PORT = 9002
+PICTURE_SERVER_PORT = 9001
 
 WINDOWS_FLAG = True
 win = None  # 预览窗口
@@ -30,6 +30,7 @@ FuncDecCB = None   # 播放库解码回调函数，需要定义为全局的
 previousPic = None
 CompareParameter = None
 CompareMethod = None
+CompareDuration = None
 
 # 获取当前系统环境
 def GetPlatform():
@@ -91,19 +92,21 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         # f = open(sFileName, 'wb')
         # f.write(pBuf)
         # f.close()
-        if dwFrameNum % 50 != 0:
+        global previousPic
+        global CompareParameter
+        global CompareMethod
+        global CompareDuration
+        if dwFrameNum % (25 * CompareDuration) != 0:
             return
         # sendPicData(pBuf)
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         # sendPic(sFileName)
-        global previousPic
-        global CompareParameter
-        global CompareMethod
-        print('paramter:', CompareParameter, CompareMethod)    
+        
+        print('paramter:', CompareParameter, CompareMethod, CompareDuration)    
         if (previousPic == None):
             previousPic = sFileName
         else:
-            print(previousPic)
+            # print(previousPic)
             if (CompareMethod == 'ssim'):
                 r = comparessim(previousPic, sFileName, CompareParameter)
             else:
@@ -221,10 +224,12 @@ if __name__ == '__main__':
 
     SetSDKInitCfg()  # 设置组件库和SSL库加载路径
 
-    paramConfig = readConfig()
-    CompareParameter = float(paramConfig[1]['params'])
-    CompareMethod = paramConfig[1]['algorithm']
-
+    paramConfig = readParam()
+    
+    CompareMethod = paramConfig['algorithm']
+    CompareParameter = float(paramConfig['param'])
+    CompareDuration = paramConfig['duration']
+    
     # 初始化DLL
     Objdll.NET_DVR_Init()
     # 启用SDK写日志

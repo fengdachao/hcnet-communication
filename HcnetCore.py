@@ -9,24 +9,37 @@ from PlayCtrl import *
 from time import sleep
 
 from client import sendPic, sendPicData
+from readConfig import readConfig, readParam
 from fangfa import comparehash
-
+from fangfa import comparessim
 # 登录的设备信息
 DEV_IP = create_string_buffer(b'192.168.3.5')
 DEV_PORT = 8000
 DEV_USER_NAME = create_string_buffer(b'admin')
 DEV_PASSWORD = create_string_buffer(b'vfes0001')
+PICTURE_SERVER_PORT = 9001
 
 WINDOWS_FLAG = True
 win = None  # 预览窗口
 funcRealDataCallBack_V30 = None  # 实时预览回调函数，需要定义为全局的
 
 PlayCtrl_Port = c_long(-1)  # 播放句柄
-Playctrldll = None  # 播放库
+
 FuncDecCB = None   # 播放库解码回调函数，需要定义为全局的
 
 previousPic = None
-Objdll = None
+CompareParameter = None
+CompareMethod = None
+CompareDuration = None
+
+global Objdll
+global Playctrldll
+
+def init(playDll, object):
+    global Playctrldll
+    global Objdll
+    Playctrldll = playDll
+    Objdll = object
 
 # 获取当前系统环境
 def GetPlatform():
@@ -38,23 +51,13 @@ def GetPlatform():
 
 # 设置SDK初始化依赖库路径
 def SetSDKInitCfg():
-    # 设置HCNetSDKCom组件库和SSL库加载路径
-    # print(os.getcwd())
-    global Objdll
-    if WINDOWS_FLAG:
-        strPath = os.getcwd().encode('gbk')
-        sdk_ComPath = NET_DVR_LOCAL_SDK_PATH()
-        sdk_ComPath.sPath = strPath
-        Objdll.NET_DVR_SetSDKInitCfg(2, byref(sdk_ComPath))
-        Objdll.NET_DVR_SetSDKInitCfg(3, create_string_buffer(strPath + b'\libcrypto-1_1-x64.dll'))
-        Objdll.NET_DVR_SetSDKInitCfg(4, create_string_buffer(strPath + b'\libssl-1_1-x64.dll'))
-    else:
-        strPath = os.getcwd().encode('utf-8')
-        sdk_ComPath = NET_DVR_LOCAL_SDK_PATH()
-        sdk_ComPath.sPath = strPath
-        Objdll.NET_DVR_SetSDKInitCfg(2, byref(sdk_ComPath))
-        Objdll.NET_DVR_SetSDKInitCfg(3, create_string_buffer(strPath + b'/libcrypto.so.1.1'))
-        Objdll.NET_DVR_SetSDKInitCfg(4, create_string_buffer(strPath + b'/libssl.so.1.1'))
+    
+    strPath = os.getcwd().encode('utf-8')
+    sdk_ComPath = NET_DVR_LOCAL_SDK_PATH()
+    sdk_ComPath.sPath = strPath
+    Objdll.NET_DVR_SetSDKInitCfg(2, byref(sdk_ComPath))
+    Objdll.NET_DVR_SetSDKInitCfg(3, create_string_buffer(strPath + b'/libcrypto.so.1.1'))
+    Objdll.NET_DVR_SetSDKInitCfg(4, create_string_buffer(strPath + b'/libssl.so.1.1'))
 
 def LoginDev(Objdll):
     # 登录注册设备
@@ -62,7 +65,7 @@ def LoginDev(Objdll):
     lUserId = Objdll.NET_DVR_Login_V30(DEV_IP, DEV_PORT, DEV_USER_NAME, DEV_PASSWORD, byref(device_info))
     return (lUserId, device_info)
 
-def capture(Objdll):
+def capture(Objdll, lRealPlayHandle):
     #
     sFileName = './pic.jpg'
     captureSuccess = Objdll.NET_DVR_CaptureJPEGPicture(lRealPlayHandle, 33, c_char_p(sFileName.encode()))
@@ -70,6 +73,7 @@ def capture(Objdll):
     print('error code %s'%Objdll.NET_DVR_GetLastError())
 
 def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
+    global Playctrldll
     # 解码回调函数
     if pFrameInfo.contents.nType == 3:
         # 解码返回视频YUV数据，将YUV数据转成jpg图片保存到本地
@@ -89,17 +93,28 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         # f = open(sFileName, 'wb')
         # f.write(pBuf)
         # f.close()
-        if dwFrameNum % 50 != 0:
+        global previousPic
+        global CompareParameter
+        global CompareMethod
+        global CompareDuration
+        if dwFrameNum % (25 * CompareDuration) != 0:
             return
         # sendPicData(pBuf)
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         # sendPic(sFileName)
-        global previousPic
+        
+        print('paramter:', CompareParameter, CompareMethod, CompareDuration)    
         if (previousPic == None):
             previousPic = sFileName
         else:
-            print(previousPic)
-            comparehash(previousPic, sFileName)
+            # print(previousPic)
+            if (CompareMethod == 'ssim'):
+                r = comparessim(previousPic, sFileName, CompareParameter)
+            else:
+                r = comparehash(previousPic, sFileName, CompareParameter)
+            # comparessim(previousPic, sFileName, CompareParameter)
+            if r:
+                sendPic(sFileName, PICTURE_SERVER_PORT)
             previousPic = sFileName
 
         if lRet == 0:
@@ -108,13 +123,16 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
             print('PlayM4_ConvertToJpegFile success')
 
 def RealDataCallBack_V30(lPlayHandle, dwDataType, pBuffer, dwBufSize, pUser):
+    global Playctrldll
+    global PlayCtrl_Port
     # 码流回调函数
     # print('data type %s', dwDataType)
     # print('buffer size:%d  %d', dwBufSize, dwDataType)
     if dwDataType == NET_DVR_SYSHEAD:
         # 设置流播放模式
-        Playctrldll.PlayM4_SetStreamOpenMode(PlayCtrl_Port, 0)
-        print('port:%s'%PlayCtrl_Port)
+        PlayCtrl_Port_1 = c_long(-1)
+        Playctrldll.PlayM4_SetStreamOpenMode(PlayCtrl_Port_1, 0)
+        print('port:%s'%PlayCtrl_Port_1)
         # 打开码流，送入40字节系统头数据
         if Playctrldll.PlayM4_OpenStream(PlayCtrl_Port, pBuffer, dwBufSize, 1024*1024):
             # 
@@ -168,117 +186,133 @@ def InputData(fileMp4, Playctrldll):
         if not Playctrldll.PlayM4_InputData(PlayCtrl_Port, pFileData, len(pFileData)):
             break
 
-if __name__ == '__main__':
-# def start():
-    # 创建窗口
-    win = tkinter.Tk()
-    #固定窗口大小
-    win.resizable(0, 0)
-    win.overrideredirect(True)
+# if __name__ == '__main__':
+# # def start():
+#     # 创建窗口
+#     win = tkinter.Tk()
+#     #固定窗口大小
+#     win.resizable(0, 0)
+#     win.overrideredirect(True)
 
-    sw = win.winfo_screenwidth()
-    # 得到屏幕宽度
-    sh = win.winfo_screenheight()
-    # 得到屏幕高度
+#     sw = win.winfo_screenwidth()
+#     # 得到屏幕宽度
+#     sh = win.winfo_screenheight()
+#     # 得到屏幕高度
 
-    # 窗口宽高
-    ww = 520
-    wh = 380
-    x = (sw - ww) / 2
-    y = (sh - wh) / 2
-    win.geometry("%dx%d+%d+%d" % (ww, wh, x, y))
+#     # 窗口宽高
+#     ww = 520
+#     wh = 380
+#     x = (sw - ww) / 2
+#     y = (sh - wh) / 2
+#     win.geometry("%dx%d+%d+%d" % (ww, wh, x, y))
 
-    # 创建退出按键
-    b = Button(win, text='退出', command=win.quit)
-    b.pack()
-    # 创建一个Canvas，设置start其背景色为白色
-    cv = tkinter.Canvas(win, bg='white', width=ww, height=wh)
-    cv.pack()
+#     # 创建退出按键
+#     b = Button(win, text='退出', command=win.quit)
+#     b.pack()
+#     # 创建一个Canvas，设置start其背景色为白色
+#     cv = tkinter.Canvas(win, bg='white', width=ww, height=wh)
+#     cv.pack()
 
-    # 获取系统平台
-    GetPlatform()
+#     # 获取系统平台
+#     GetPlatform()
 
-    # 加载库,先加载依赖库
-    if WINDOWS_FLAG:
-        os.chdir(r'./lib/win')
-        Objdll = ctypes.CDLL(r'./HCNetSDK.dll')  # 加载网络库
-        Playctrldll = ctypes.CDLL(r'./PlayCtrl.dll')  # 加载播放库
-    else:
-        os.chdir(r'./lib/linux')
-        Objdll = cdll.LoadLibrary(r'./libhcnetsdk.so')
-        Playctrldll = cdll.LoadLibrary(r'./libPlayCtrl.so')
+#     # 加载库,先加载依赖库
+#     if WINDOWS_FLAG:
+#         os.chdir(r'./lib/win')
+#         Objdll = ctypes.CDLL(r'./HCNetSDK.dll')  # 加载网络库
+#         Playctrldll = ctypes.CDLL(r'./PlayCtrl.dll')  # 加载播放库
+#     else:
+#         os.chdir(r'./lib/linux')
+#         Objdll = cdll.LoadLibrary(r'./libhcnetsdk.so')
+#         Playctrldll = cdll.LoadLibrary(r'./libPlayCtrl.so')
 
-    SetSDKInitCfg()  # 设置组件库和SSL库加载路径
+#     SetSDKInitCfg()  # 设置组件库和SSL库加载路径
 
-    # 初始化DLL
-    Objdll.NET_DVR_Init()
-    # 启用SDK写日志
-    Objdll.NET_DVR_SetLogToFile(3, bytes('./SdkLog_Python/', encoding="utf-8"), False)
+#     paramConfig = readParam()
+    
+#     CompareMethod = paramConfig['algorithm']
+#     CompareParameter = float(paramConfig['param'])
+#     CompareDuration = paramConfig['duration']
+    
+#     # 初始化DLL
+#     Objdll.NET_DVR_Init()
+#     # 启用SDK写日志
+#     Objdll.NET_DVR_SetLogToFile(3, bytes('./SdkLog_Python/', encoding="utf-8"), False)
    
-    # 获取一个播放句柄
-    if not Playctrldll.PlayM4_GetPort(byref(PlayCtrl_Port)):
-        print(u'获取播放库句柄失败')
+#     # 获取一个播放句柄
+#     if not Playctrldll.PlayM4_GetPort(byref(PlayCtrl_Port)):
+#         print(u'获取播放库句柄失败')
 
-    # 登录设备
-    (lUserId, device_info) = LoginDev(Objdll)
-    if lUserId < 0:
-        err = Objdll.NET_DVR_GetLastError()
-        print('Login device fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-        # 释放资源
-        Objdll.NET_DVR_Cleanup()
-        exit()
+#     # 登录设备
+#     (lUserId, device_info) = LoginDev(Objdll)
+#     if lUserId < 0:
+#         err = Objdll.NET_DVR_GetLastError()
+#         print('Login device fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+#         # 释放资源
+#         Objdll.NET_DVR_Cleanup()
+#         exit()
 
-    setModeSign = Objdll.NET_DVR_SetCapturePictureMode(1)
-    print('set mode:', setModeSign)
+#     setModeSign = Objdll.NET_DVR_SetCapturePictureMode(1)
+#     print('set mode:', setModeSign)
 
     
-    # 定义码流回调函数
-    funcRealDataCallBack_V30 = REALDATACALLBACK(RealDataCallBack_V30)
-    # 开启预览
-    lRealPlayHandle = OpenPreview(Objdll, lUserId, funcRealDataCallBack_V30)
-    if lRealPlayHandle < 0:
-        print ('Open preview fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-        # 登出设备
-        Objdll.NET_DVR_Logout(lUserId)
-        # 释放资源
-        Objdll.NET_DVR_Cleanup()
-        exit()
+#     # 定义码流回调函数
+#     funcRealDataCallBack_V30 = REALDATACALLBACK(RealDataCallBack_V30)
+#     # 开启预览
+#     lRealPlayHandle = OpenPreview(Objdll, lUserId, funcRealDataCallBack_V30)
+#     if lRealPlayHandle < 0:
+#         print ('Open preview fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+#         # 登出设备
+#         Objdll.NET_DVR_Logout(lUserId)
+#         # 释放资源
+#         Objdll.NET_DVR_Cleanup()
+#         exit()
 
-    capture(Objdll)
+#     capture(Objdll)
 
-    #show Windows
-    win.mainloop()    
+#     #show Windows
+#     win.mainloop()    
 
-    # 开始云台控制
-    # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 0)
-    # if lRet == 0:
-    #     print ('Start ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-    # else:
-    #     print ('Start ptz control success')
+#     # 开始云台控制
+#     # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 0)
+#     # if lRet == 0:
+#     #     print ('Start ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+#     # else:
+#     #     print ('Start ptz control success')
 
-    # # 转动一秒
-    # sleep(1)
+#     # # 转动一秒
+#     # sleep(1)
 
-    # 停止云台控制
-    # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 1)
-    # if lRet == 0:
-    #     print('Stop ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-    # else:
-    #     print('Stop ptz control success')
+#     # 停止云台控制
+#     # lRet = Objdll.NET_DVR_PTZControl(lRealPlayHandle, PAN_LEFT, 1)
+#     # if lRet == 0:
+#     #     print('Stop ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+#     # else:
+#     #     print('Stop ptz control success')
 
-    # 关闭预览
-    Objdll.NET_DVR_StopRealPlay(lRealPlayHandle)
-    print('close preview ...')
-    # 停止解码，释放播放库资源
-    if PlayCtrl_Port.value > -1:
-        Playctrldll.PlayM4_Stop(PlayCtrl_Port)
-        Playctrldll.PlayM4_CloseStream(PlayCtrl_Port)
-        Playctrldll.PlayM4_FreePort(PlayCtrl_Port)
-        PlayCtrl_Port = c_long(-1)
+#     # 关闭预览
+#     Objdll.NET_DVR_StopRealPlay(lRealPlayHandle)
+#     print('close preview ...')
+#     # 停止解码，释放播放库资源
+#     if PlayCtrl_Port.value > -1:
+#         Playctrldll.PlayM4_Stop(PlayCtrl_Port)
+#         Playctrldll.PlayM4_CloseStream(PlayCtrl_Port)
+#         Playctrldll.PlayM4_FreePort(PlayCtrl_Port)
+#         PlayCtrl_Port = c_long(-1)
 
-    # 登出设备
-    Objdll.NET_DVR_Logout(lUserId)
+#     # 登出设备
+#     Objdll.NET_DVR_Logout(lUserId)
 
-    # 释放资源
-    Objdll.NET_DVR_Cleanup()
+#     # 释放资源
+#     Objdll.NET_DVR_Cleanup()
 
+
+# # start()
+# # if __name__ == '__main__':
+# #     i = 0
+# #     start()
+#     # while i < 1:
+#     #     print(i)
+#     #     sleep(1)
+#     #     start()
+#     #     i += 1
