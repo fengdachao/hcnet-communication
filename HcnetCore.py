@@ -21,7 +21,6 @@ PICTURE_SERVER_PORT = 9001
 
 WINDOWS_FLAG = True
 win = None  # 预览窗口
-funcRealDataCallBack_V30 = None  # 实时预览回调函数，需要定义为全局的
 
 PlayCtrl_Port = c_long(-1)  # 播放句柄
 
@@ -51,7 +50,7 @@ def GetPlatform():
 
 # 设置SDK初始化依赖库路径
 def SetSDKInitCfg():
-    
+
     strPath = os.getcwd().encode('utf-8')
     sdk_ComPath = NET_DVR_LOCAL_SDK_PATH()
     sdk_ComPath.sPath = strPath

@@ -17,7 +17,7 @@ DEV_IP = create_string_buffer(b'192.168.3.4')
 DEV_PORT = 8000
 DEV_USER_NAME = create_string_buffer(b'admin')
 DEV_PASSWORD = create_string_buffer(b'vfes0001')
-PICTURE_SERVER_PORT = 9001
+PICTURE_SERVER_PORT = 9002
 
 WINDOWS_FLAG = True
 win = None  # 预览窗口
