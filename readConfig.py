@@ -17,8 +17,14 @@ def read(url):
     configJson = json.loads(configData)
     conn.close()
     return configJson
-def readConfig():
-    return read('/api/config/list')
+def readConfig(number):
+    res = read('/api/config/list')
+    if res:
+        for i in range(len(res)):
+            item = res[i]
+            if (item['number'] == number):
+                return item
+    return None
 
 def readParam():
     return read('/api/config/param')
