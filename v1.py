@@ -19,7 +19,7 @@ if __name__ == '__main__':
         print('start ip:', ip)
         p = Process(target=startVideo, args=(ip.encode(), 8000, create_string_buffer(b'admin'), create_string_buffer(b'vfes0001')))
         p.start()
-        p.join()
+        # p.join()
 
     # ip = '192.168.3.5' #config['deviceList'][0]
     # print('start ip:', ip)
