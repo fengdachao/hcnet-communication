@@ -7,6 +7,7 @@ PORT = 9001 # The port used by the server
 
 def sendPic(fileName, port = PORT):
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+      print ('host:', HOST, port)
       s.connect((HOST, port))
       with open(fileName, 'rb') as imageFile:
         contents = imageFile.read()
