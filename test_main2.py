@@ -228,7 +228,7 @@ if __name__ == '__main__':
     
     CompareMethod = paramConfig['algorithm']
     CompareParameter = float(paramConfig['param'])
-    CompareDuration = paramConfig['duration']
+    CompareDuration = float(paramConfig['duration'])
     
     # 初始化DLL
     Objdll.NET_DVR_Init()

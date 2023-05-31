@@ -1,39 +1,39 @@
-[2023-05-25 11:59:21.292][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[/usr/lib/x86_64-linux-gnu/libz.so.1.2.11], hHandleRet[1259944832]
-[2023-05-25 11:59:21.292][INF] The COM:HCCoreBase ver is 6.1.4.15, 2020_03_05. Async:1.
-[2023-05-25 11:59:21.292][INF] The COM:Core ver is 6.1.9.4, 2022_04_12. Async:1.
-[2023-05-25 11:59:21.292][INF] This HCNetSDK ver is 6.1.9.4 Ver 2022_04_12.
-[2023-05-25 11:59:21.292][INF] Login dev 192.168.3.5:8000.
-[2023-05-25 11:59:21.292][INF] dwTotalNum[2048]
-[2023-05-25 11:59:21.293][INF] Private connect 192.168.3.5:8000 sock=133 this=0x301cdc74 cmd=0x10000 port=32930
-[2023-05-25 11:59:21.293][INF] LogonDev1 in[192.168.3.5:8000]
-[2023-05-25 11:59:21.293][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[/home/vfes/hcnet-communication/lib/linux/libcrypto.so.1.1], hHandleRet[807238480]
-[2023-05-25 11:59:21.293][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[/home/vfes/hcnet-communication/lib/linux/libssl.so.1.1], hHandleRet[807240624]
-[2023-05-25 11:59:21.293][INF] SSLTRANSAPI::LoadAPI, libeay, Load Real Path[/home/vfes/hcnet-communication/lib/linux/libcrypto.so.1.1]
-[2023-05-25 11:59:21.293][INF] SSLTRANSAPI::IsAllAPILoaded, SSL_library_init Unload
-[2023-05-25 11:59:21.293][INF] OpenSSL, Not All Function Loaded!
-[2023-05-25 11:59:21.293][INF] SSLTRANSAPI::PrintVersion, OpenSSL version info [OpenSSL 1.1.1l  24 Aug 2021]
-[2023-05-25 11:59:21.293][INF] CSSLTrans::SSLCtxInit, dwSSLVersion[6], m_fnTLSServerMethod
-[2023-05-25 11:59:21.341][DBG] CComBase::Load, Load szDllPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/libHCPreview.so] SUCC
-[2023-05-25 11:59:21.341][INF] AbilityAnalyze---Init-- start
-[2023-05-25 11:59:21.342][DBG] AbilityAnalyze---Init-- over, DeviceList path [/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/LocalXml/DeviceList.xml], load result[0]
-[2023-05-25 11:59:21.342][INF] The COM:Preview ver is 6.1.9.4, 2022_04_12.
-[2023-05-25 11:59:21.344][INF] Private connect 192.168.3.4:8000 sock=134 this=0xd17fa414 cmd=0x30000 port=43616
-[2023-05-25 11:59:21.356][INF] ID-IP-CHAN[0-192.168.3.4-1] [CGetTCPStream::Start] Stream Head Data Callback Start
-[2023-05-25 11:59:21.356][INF] ID-IP-CHAN[0-192.168.3.4-1] [CGetTCPStream::Start] Stream Head Data Callback End
-[2023-05-25 11:59:21.356][INF] CCoreGlobalCtrl::LoadDSo, enumDllType[2], cTempPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/]
-[2023-05-25 11:59:21.356][DBG] CCoreGlobalCtrl::LoadDSo, HPR_LoadDSo, hHandleRet[-779368400], enumDllType[2], Path[libSystemTransform.so], syserror[115]
-[2023-05-25 11:59:21.356][INF] CStreamConvert::LoadConvertLib Load Succ, m_iInitCount = 1
-[2023-05-25 11:59:21.356][DBG] ID-IP-CHAN[0-192.168.3.4-1] RTP Format
-[2023-05-25 11:59:21.370][INF] Private connect 192.168.3.4:8000 sock=135 this=0xd17fa9f8 cmd=0x30009 port=43632
-[2023-05-25 11:59:21.389][DBG] CComBase::Load, Load szDllPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/libHCPreview.so] SUCC
-[2023-05-25 11:59:21.389][INF] AbilityAnalyze---Init-- start
-[2023-05-25 11:59:21.390][DBG] AbilityAnalyze---Init-- over, DeviceList path [/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/LocalXml/DeviceList.xml], load result[0]
-[2023-05-25 11:59:21.390][INF] The COM:Preview ver is 6.1.9.4, 2022_04_12.
-[2023-05-25 11:59:21.391][INF] Private connect 192.168.3.5:8000 sock=133 this=0x301cdc74 cmd=0x30000 port=32946
-[2023-05-25 11:59:21.399][INF] ID-IP-CHAN[0-192.168.3.5-1] [CGetTCPStream::Start] Stream Head Data Callback Start
-[2023-05-25 11:59:21.399][INF] ID-IP-CHAN[0-192.168.3.5-1] [CGetTCPStream::Start] Stream Head Data Callback End
-[2023-05-25 11:59:21.399][INF] CCoreGlobalCtrl::LoadDSo, enumDllType[2], cTempPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/]
-[2023-05-25 11:59:21.399][DBG] CCoreGlobalCtrl::LoadDSo, HPR_LoadDSo, hHandleRet[807993536], enumDllType[2], Path[libSystemTransform.so], syserror[115]
-[2023-05-25 11:59:21.399][INF] CStreamConvert::LoadConvertLib Load Succ, m_iInitCount = 1
-[2023-05-25 11:59:21.399][DBG] ID-IP-CHAN[0-192.168.3.5-1] RTP Format
-[2023-05-25 11:59:21.412][INF] Private connect 192.168.3.5:8000 sock=135 this=0x301ce258 cmd=0x30009 port=32960
+[2023-05-25 14:24:20.284][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[/usr/lib/x86_64-linux-gnu/libz.so.1.2.11], hHandleRet[-918369408]
+[2023-05-25 14:24:20.284][INF] The COM:HCCoreBase ver is 6.1.4.15, 2020_03_05. Async:1.
+[2023-05-25 14:24:20.284][INF] The COM:Core ver is 6.1.9.4, 2022_04_12. Async:1.
+[2023-05-25 14:24:20.284][INF] This HCNetSDK ver is 6.1.9.4 Ver 2022_04_12.
+[2023-05-25 14:24:20.284][INF] Login dev 192.168.3.5:8000.
+[2023-05-25 14:24:20.284][INF] dwTotalNum[2048]
+[2023-05-25 14:24:20.284][INF] Private connect 192.168.3.5:8000 sock=133 this=0x3402df34 cmd=0x10000 port=39780
+[2023-05-25 14:24:20.284][INF] LogonDev1 in[192.168.3.5:8000]
+[2023-05-25 14:24:20.284][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[/home/vfes/hcnet-communication/lib/linux/libcrypto.so.1.1], hHandleRet[872644112]
+[2023-05-25 14:24:20.285][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[/home/vfes/hcnet-communication/lib/linux/libssl.so.1.1], hHandleRet[872646256]
+[2023-05-25 14:24:20.285][INF] SSLTRANSAPI::LoadAPI, libeay, Load Real Path[/home/vfes/hcnet-communication/lib/linux/libcrypto.so.1.1]
+[2023-05-25 14:24:20.285][INF] SSLTRANSAPI::IsAllAPILoaded, SSL_library_init Unload
+[2023-05-25 14:24:20.285][INF] OpenSSL, Not All Function Loaded!
+[2023-05-25 14:24:20.285][INF] SSLTRANSAPI::PrintVersion, OpenSSL version info [OpenSSL 1.1.1l  24 Aug 2021]
+[2023-05-25 14:24:20.285][INF] CSSLTrans::SSLCtxInit, dwSSLVersion[6], m_fnTLSServerMethod
+[2023-05-25 14:24:20.319][DBG] CComBase::Load, Load szDllPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/libHCPreview.so] SUCC
+[2023-05-25 14:24:20.319][INF] AbilityAnalyze---Init-- start
+[2023-05-25 14:24:20.320][DBG] AbilityAnalyze---Init-- over, DeviceList path [/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/LocalXml/DeviceList.xml], load result[0]
+[2023-05-25 14:24:20.320][INF] The COM:Preview ver is 6.1.9.4, 2022_04_12.
+[2023-05-25 14:24:20.320][INF] Private connect 192.168.3.4:8000 sock=133 this=0x83c99014 cmd=0x30000 port=33802
+[2023-05-25 14:24:20.331][INF] ID-IP-CHAN[0-192.168.3.4-1] [CGetTCPStream::Start] Stream Head Data Callback Start
+[2023-05-25 14:24:20.331][INF] ID-IP-CHAN[0-192.168.3.4-1] [CGetTCPStream::Start] Stream Head Data Callback End
+[2023-05-25 14:24:20.331][INF] CCoreGlobalCtrl::LoadDSo, enumDllType[2], cTempPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/]
+[2023-05-25 14:24:20.331][DBG] CCoreGlobalCtrl::LoadDSo, HPR_LoadDSo, hHandleRet[-2083146656], enumDllType[2], Path[libSystemTransform.so], syserror[115]
+[2023-05-25 14:24:20.331][INF] CStreamConvert::LoadConvertLib Load Succ, m_iInitCount = 1
+[2023-05-25 14:24:20.332][DBG] ID-IP-CHAN[0-192.168.3.4-1] RTP Format
+[2023-05-25 14:24:20.332][INF] Private connect 192.168.3.4:8000 sock=135 this=0x83c995f8 cmd=0x30009 port=33814
+[2023-05-25 14:24:20.374][DBG] CComBase::Load, Load szDllPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/libHCPreview.so] SUCC
+[2023-05-25 14:24:20.374][INF] AbilityAnalyze---Init-- start
+[2023-05-25 14:24:20.375][DBG] AbilityAnalyze---Init-- over, DeviceList path [/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/LocalXml/DeviceList.xml], load result[0]
+[2023-05-25 14:24:20.375][INF] The COM:Preview ver is 6.1.9.4, 2022_04_12.
+[2023-05-25 14:24:20.376][INF] Private connect 192.168.3.5:8000 sock=133 this=0x3402df34 cmd=0x30000 port=39786
+[2023-05-25 14:24:20.390][INF] ID-IP-CHAN[0-192.168.3.5-1] [CGetTCPStream::Start] Stream Head Data Callback Start
+[2023-05-25 14:24:20.390][INF] ID-IP-CHAN[0-192.168.3.5-1] [CGetTCPStream::Start] Stream Head Data Callback End
+[2023-05-25 14:24:20.390][INF] CCoreGlobalCtrl::LoadDSo, enumDllType[2], cTempPath[/home/vfes/hcnet-communication/lib/linux/HCNetSDKCom/]
+[2023-05-25 14:24:20.391][DBG] CCoreGlobalCtrl::LoadDSo, HPR_LoadDSo, hHandleRet[873399328], enumDllType[2], Path[libSystemTransform.so], syserror[115]
+[2023-05-25 14:24:20.391][INF] CStreamConvert::LoadConvertLib Load Succ, m_iInitCount = 1
+[2023-05-25 14:24:20.392][DBG] ID-IP-CHAN[0-192.168.3.5-1] RTP Format
+[2023-05-25 14:24:20.401][INF] Private connect 192.168.3.5:8000 sock=135 this=0x3402e518 cmd=0x30009 port=39790
