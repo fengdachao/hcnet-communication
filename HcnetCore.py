@@ -36,6 +36,7 @@ previousPic = None
 CompareParameter = None
 CompareMethod = None
 CompareDuration = None
+EXIT = 0
 
 # 获取当前系统环境
 def GetPlatform():
@@ -200,6 +201,7 @@ def startVideo(ip, port, username, password):
     global CompareParameter
     global CompareMethod
     global CompareDuration
+    global EXIT
     # deviceIp = create_string_buffer(ip)
     # 创建窗口
     win = tkinter.Tk()
@@ -308,7 +310,7 @@ def startVideo(ip, port, username, password):
     #     print('Stop ptz control fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
     # else:
     #     print('Stop ptz control success')
-
+    EXIT = 1
     # 关闭预览
     Objdll.NET_DVR_StopRealPlay(lRealPlayHandle)
     print('close preview ...')
@@ -326,7 +328,10 @@ def startVideo(ip, port, username, password):
     Objdll.NET_DVR_Cleanup()
 
 def getConfig():
-    print('read config.......')
+    global EXIT
+    if (EXIT):
+        return
+    print('read config.......', EXIT)
     global CompareParameter
     global CompareMethod
     global CompareDuration

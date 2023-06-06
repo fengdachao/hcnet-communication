@@ -1,7 +1,9 @@
 import socket
 import os
 
-HOST = "192.168.3.2"  # The server's hostname or IP address
+from constant import HOST
+
+#HOST = "192.168.3.2"  # The server's hostname or IP address
 # HOST = "localhost"
 PORT = 9001 # The port used by the server
 
