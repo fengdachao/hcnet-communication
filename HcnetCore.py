@@ -7,9 +7,11 @@ from tkinter import *
 from HCNetSDK import *
 from PlayCtrl import *
 from time import sleep
+from threading import Timer, Thread
 
 from client import sendPic, sendPicData
 from readConfig import readConfig, readParam
+
 from fangfa import comparehash
 from fangfa import comparessim
 # 登录的设备信息
@@ -241,12 +243,19 @@ def startVideo(ip, port, username, password, sendPicPort):
 
     SetSDKInitCfg()  # 设置组件库和SSL库加载路径
 
-    paramConfig = readParam()
+    # paramConfig = readParam()
     
-    CompareMethod = paramConfig['algorithm']
-    CompareParameter = float(paramConfig['param'])
-    CompareDuration = float(paramConfig['duration'])
+    # CompareMethod = paramConfig['algorithm']
+    # CompareParameter = float(paramConfig['param'])
+    # CompareDuration = float(paramConfig['duration'])
     PICTURE_SERVER_PORT = sendPicPort
+    # CompareMethod = paramConfig['algorithm']
+    # CompareParameter = float(paramConfig['param'])
+    # CompareDuration = float(paramConfig['duration'])
+    # getConfig()
+    thread = Thread(target=getConfig)
+    thread.start()
+
     
     # 初始化DLL
     Objdll.NET_DVR_Init()
@@ -321,6 +330,22 @@ def startVideo(ip, port, username, password, sendPicPort):
 
     # 释放资源
     Objdll.NET_DVR_Cleanup()
+
+def getConfig():
+    print('read config.......')
+    global CompareParameter
+    global CompareMethod
+    global CompareDuration
+
+    paramConfig = readParam()
+    CompareMethod = paramConfig['algorithm']
+    CompareParameter = float(paramConfig['param'])
+    CompareDuration = float(paramConfig['duration']) 
+    sleep(10)
+    thread = Thread(target=getConfig)
+    thread.start()
+    # readThread = Timer(6, getConfig)
+    # readThread.start()
 
 
 # start()
