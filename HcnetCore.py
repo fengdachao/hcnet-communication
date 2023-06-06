@@ -104,6 +104,7 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         global CompareParameter
         global CompareMethod
         global CompareDuration
+        global PICTURE_SERVER_PORT
         if dwFrameNum % (25 * CompareDuration) != 0:
             return
         # sendPicData(pBuf)
@@ -193,7 +194,7 @@ def InputData(fileMp4, Playctrldll):
         if not Playctrldll.PlayM4_InputData(PlayCtrl_Port, pFileData, len(pFileData)):
             break
 
-def startVideo(ip, port, username, password):
+def startVideo(ip, port, username, password, sendPicPort):
     global Playctrldll
     global Objdll
     global PlayCtrl_Port
@@ -202,6 +203,7 @@ def startVideo(ip, port, username, password):
     global CompareMethod
     global CompareDuration
     global EXIT
+    global PICTURE_SERVER_PORT
     # deviceIp = create_string_buffer(ip)
     # 创建窗口
     win = tkinter.Tk()
@@ -245,6 +247,10 @@ def startVideo(ip, port, username, password):
 
     # paramConfig = readParam()
     
+    # CompareMethod = paramConfig['algorithm']
+    # CompareParameter = float(paramConfig['param'])
+    # CompareDuration = float(paramConfig['duration'])
+    PICTURE_SERVER_PORT = sendPicPort
     # CompareMethod = paramConfig['algorithm']
     # CompareParameter = float(paramConfig['param'])
     # CompareDuration = float(paramConfig['duration'])

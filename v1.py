@@ -17,7 +17,8 @@ if __name__ == '__main__':
     for i in range(len(config['deviceList'])):
         ip = config['deviceList'][i]
         print('start ip:', ip)
-        p = Process(target=startVideo, args=(ip.encode(), 8000, create_string_buffer(b'admin'), create_string_buffer(b'vfes0001')))
+        sendPicPort = config[i]['port']
+        p = Process(target=startVideo, args=(ip.encode(), 8000, create_string_buffer(b'admin'), create_string_buffer(b'vfes0001'), sendPicPort))
         p.start()
         # p.join()
 
