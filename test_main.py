@@ -13,7 +13,7 @@ from readConfig import readConfig, readParam
 from fangfa import comparehash
 from fangfa import comparessim
 # 登录的设备信息
-DEV_IP = create_string_buffer(b'192.168.3.5')
+DEV_IP = create_string_buffer(b'192.168.1.64')
 DEV_PORT = 8000
 DEV_USER_NAME = create_string_buffer(b'admin')
 DEV_PASSWORD = create_string_buffer(b'vfes0001')

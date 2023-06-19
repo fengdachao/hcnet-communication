@@ -111,7 +111,7 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
         lRet = Playctrldll.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, nType, c_char_p(sFileName.encode()))
         # sendPic(sFileName)
         
-        print('paramter:', CompareParameter, CompareMethod, CompareDuration)    
+        #print('paramter:', CompareParameter, CompareMethod, CompareDuration)    
         if (previousPic == None):
             previousPic = sFileName
         else:
@@ -123,6 +123,8 @@ def DecCBFun(nPort, pBuf, nSize, pFrameInfo, nUser, nReserved2):
             # comparessim(previousPic, sFileName, CompareParameter)
             if r:
                 sendPic(sFileName, PICTURE_SERVER_PORT)
+            os.remove(previousPic)
+            print('remove file:', previousPic)
             previousPic = sFileName
 
         if lRet == 0:
@@ -269,14 +271,18 @@ def startVideo(ip, port, username, password, sendPicPort):
         print(u'获取播放库句柄失败')
 
     # 登录设备
-    (lUserId, device_info) = LoginDev(ip, port, username, password, Objdll)
-    if lUserId < 0:
-        err = Objdll.NET_DVR_GetLastError()
-        print('Login device fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
-        # 释放资源
-        Objdll.NET_DVR_Cleanup()
-        # exit()
-        return
+    while (True):
+        (lUserId, device_info) = LoginDev(ip, port, username, password, Objdll)
+        if lUserId < 0:
+            err = Objdll.NET_DVR_GetLastError()
+            # print('Login device fail, error code is: %d' % Objdll.NET_DVR_GetLastError())
+            # 释放资源
+            # Objdll.NET_DVR_Cleanup()
+            # exit()
+            # return
+            sleep(1)
+        else:
+            break
 
     setModeSign = Objdll.NET_DVR_SetCapturePictureMode(1)
     print('set mode:', setModeSign)
