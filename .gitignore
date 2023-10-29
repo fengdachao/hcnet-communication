@@ -2,3 +2,4 @@ __pycache__
 pic/
 pic1/
 lib/linux/SDKLOG/*.*
+lib/linux/SdkLog_Python/*.*

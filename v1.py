@@ -7,15 +7,15 @@ from multiprocessing import Process
 
 if __name__ == '__main__':
     config = readConfig('P01')
-    print('config:', config)
+    #print('config:', config)
     # for i in range(len(config['deviceList'])):
     #     ip = config['deviceList'][i]
     #     print('start ip:', ip)
     #     startVideo(create_string_buffer(ip.encode()), 8000, create_string_buffer(b'admin'), create_string_buffer(b'vfes0001'))
     #     # break
 
-    for i in range(len(config['deviceList'])):
-        ip = config['deviceList'][i]
+    for i in range(len(config['list'])):
+        ip = config['list'][i]['ip']
         print('start ip:', ip)
         sendPicPort = int(config['list'][i]['port'])
         p = Process(target=startVideo, args=(ip.encode(), 8000, create_string_buffer(b'admin'), create_string_buffer(b'vfes0001'), sendPicPort))

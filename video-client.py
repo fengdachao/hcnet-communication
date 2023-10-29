@@ -12,6 +12,9 @@ from HcnetCore import GetPlatform, SetSDKInitCfg, RealDataCallBack_V30, OpenPrev
 from client import sendPic, sendPicData
 from fangfa import comparehash
 
+import matplotlib
+
+matplotlib.use('Agg')
 
 # 登录的设备信息
 DEV_IP = create_string_buffer(b'192.168.3.5')
